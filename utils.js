@@ -19,7 +19,7 @@ async function getMapTopFive(mapname) {
         const values = [mapname]
         connection.query(sql, values, (err, res) => {
             if (err) reject(err)
-            resolve(res[0])
+            resolve(res)
         })
     })
 }
