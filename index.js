@@ -1,20 +1,44 @@
-// Require the necessary discord.js classes
-const { Client, Events, GatewayIntentBits } = require("discord.js")
-require("dotenv").config()
+const MySQLEvents = require("@rodrigogs/mysql-events")
+const { getMapTopFive } = require("./utils")
+const { sendTopOneMessage } = require("./disInteraction")
+const axios = require("axios")
 
-const DISCORD_TOKEN = process.env.DISCORD_TOKEN
-const CHANNEL_ID = process.env.CHANNEL_ID
+const MYSQL_HOST_NAME = process.env.MYSQL_HOST_NAME
+const MYSQL_USER = process.env.MYSQL_HOST_NAME
+const MYSQL_PASSWORD = process.env.MYSQL_HOST_NAME
 
-// Create a new client instance
-const client = new Client({ intents: [GatewayIntentBits.Guilds] })
+const program = async () => {
+    const instance = new MySQLEvents(
+        {
+            host: MYSQL_HOST_NAME,
+            user: MYSQL_USER,
+            password: MYSQL_PASSWORD,
+        },
+        {
+            startAtEnd: true,
+        }
+    )
 
-// When the client is ready, run this code (only once)
-// We use 'c' for the event parameter to keep it separate from the already defined 'client'
-client.once(Events.ClientReady, (c) => {
-    console.log(`Ready! Logged in as ${c.user.tag}`)
-    const channel = client.channels.cache.get(CHANNEL_ID)
-    channel.send("Hello")
-})
+    await instance.start()
 
-// Log in to Discord with your client's token
-client.login(DISCORD_TOKEN)
+    instance.addTrigger({
+        name: "Map finish",
+        expression: "ddrace.record_race",
+        statement: MySQLEvents.STATEMENTS.INSERT,
+        onEvent: async (event) => {
+            const enteredData = event.affectedRows[0].after
+            const mapTopFive = await getMapTopFive(enteredData.Map)
+
+            if (enteredData == mapTopFive[0]) {
+                sendTopOneMessage(mapTopFive)
+            }
+        },
+    })
+
+    instance.on(MySQLEvents.EVENTS.CONNECTION_ERROR, console.error)
+    instance.on(MySQLEvents.EVENTS.ZONGJI_ERROR, console.error)
+}
+
+program()
+    .then(() => console.log("Waiting for database vents..."))
+    .catch(console.error)
