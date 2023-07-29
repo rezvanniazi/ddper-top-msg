@@ -13,7 +13,9 @@ function sendTopOneMessage(mapTopFive) {
     // We use 'c' for the event parameter to keep it separate from the already defined 'client'
     client.once(Events.ClientReady, (c) => {
         const channel = client.channels.cache.get(CHANNEL_ID)
-        channel.send(`${mapTopFive[0]} tope ${mapTopFive[1]} ro zad`)
+        channel.send(
+            `${mapTopFive[0].Name} tope ${mapTopFive[1].Name} ro dar mape ${mapTopFive[0].Map} zad`
+        )
     })
 
     // Log in to Discord with your client's token

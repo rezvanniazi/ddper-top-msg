@@ -29,7 +29,7 @@ const program = async () => {
             const enteredData = event.affectedRows[0].after
             const mapTopFive = await getMapTopFive(enteredData.Map)
 
-            if (enteredData == mapTopFive[0]) {
+            if (enteredData.TimeStamp == mapTopFive[0].TimeStamp) {
                 sendTopOneMessage(mapTopFive)
             }
         },
@@ -40,5 +40,5 @@ const program = async () => {
 }
 
 program()
-    .then(() => console.log("Waiting for database vents..."))
+    .then(() => console.log("Waiting for database events..."))
     .catch(console.error)
