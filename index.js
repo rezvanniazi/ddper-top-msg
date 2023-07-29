@@ -4,8 +4,8 @@ const { sendTopOneMessage } = require("./disInteraction")
 const axios = require("axios")
 
 const MYSQL_HOST_NAME = process.env.MYSQL_HOST_NAME
-const MYSQL_USER = process.env.MYSQL_HOST_NAME
-const MYSQL_PASSWORD = process.env.MYSQL_HOST_NAME
+const MYSQL_USER = process.env.MYSQL_USER
+const MYSQL_PASSWORD = process.env.MYSQL_PASSWORD
 
 const program = async () => {
     const instance = new MySQLEvents(
